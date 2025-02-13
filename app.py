@@ -56,14 +56,7 @@ param_grid = {
     'colsample_bytree': [0.8, 1.0]
 }
 
-xgb_tuned = RandomizedSearchCV(
-    XGBClassifier(random_state=42, tree_method='hist'),
-    param_grid,
-    cv=5,
-    n_iter=10,
-    scoring='accuracy'
-)
-
+xgb_tuned = RandomizedSearchCV(XGBClassifier(random_state=42, use_label_encoder=False), param_grid, cv=5, n_iter=10, scoring='accuracy')
 xgb_tuned.fit(X_train_fert_scaled, y_fert_train_balanced)
 fertilizer_model = xgb_tuned.best_estimator_
 
@@ -113,6 +106,18 @@ fertilizer_name = label_encoders["Primary_Fertilizer"].inverse_transform(fertili
 
 print(f"\nRecommended Crop: {crop_name}")
 print(f"Recommended Fertilizer: {fertilizer_name}")
+
+# AI-Generated Soil Report
+soil_condition_desc = f"\nThe soil has a {'high' if user_input['N'] > 50 else 'low'} nitrogen content, which {'supports' if user_input['N'] > 50 else 'may limit'} plant growth. "
+soil_condition_desc += f"Phosphorus is {'high' if user_input['P'] > 50 else 'low'}, affecting root development. "
+soil_condition_desc += f"Potassium is {'high' if user_input['K'] > 50 else 'low'}, influencing disease resistance. "
+soil_condition_desc += f"The soil pH is {'acidic' if user_input['ph'] < 6 else 'neutral' if 6 <= user_input['ph'] <= 7 else 'alkaline'}, which impacts nutrient availability. "
+soil_condition_desc += f"Rainfall is {'sufficient' if user_input['rainfall'] > 100 else 'low'}, influencing irrigation needs. "
+soil_condition_desc += f"Given these conditions, {crop_name} is recommended as it thrives in similar environments. "
+soil_condition_desc += f"The recommended fertilizer, {fertilizer_name}, helps to balance soil nutrients for optimal crop growth."
+
+print("\nAI-Generated Detailed Soil Report:")
+print(soil_condition_desc)
 
 # Visualization
 labels = ['Crop Model Accuracy', 'Fertilizer Model Accuracy']
